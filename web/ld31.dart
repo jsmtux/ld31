@@ -5,8 +5,9 @@ import 'package:vector_math/vector_math.dart';
 
 import 'renderer.dart';
 import 'element.dart';
-import 'base_geometry.dart';
+import 'top_terrain.dart';
 import 'game_state.dart';
+import 'terrain.dart';
 
 main() {
   CanvasElement canvas = querySelector(".game-element");
@@ -15,46 +16,13 @@ main() {
   Renderer renderer = new Renderer(canvas);
   GameState draw_state = new GameState(renderer);
 
-  List<double> vertices = [
-     0.0,  1.0,  0.0,
-    -1.0, -1.0,  0.0,
-     1.0, -1.0,  0.0
-  ];
-  List<double> colors = [
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0
-  ];
+  Terrain terrain = createTopTerrain();
+  EngineElement e2 = draw_state.addElement(terrain.calculateBaseGeometry());
+  e2.drawable_.position_ = new Vector3(.0, -1.0, -3.0);
 
-  List<int> indices = [0, 1, 2];
-
-  BaseGeometry triangle = new ColoredGeometry(vertices, indices, colors);
-
-  vertices = [
-                  1.0,  1.0,  0.0,
-                 -1.0,  1.0,  0.0,
-                  1.0, -1.0,  0.0,
-                 -1.0, -1.0,  0.0
-             ];
-  List<double> coords = [
-    1.0, 1.0,
-    0.0, 1.0,
-    1.0, 0.0,
-    0.0, 0.0
-  ];
-
-  indices = [0, 1, 2, 1, 2, 3];
-
-  BaseGeometry quad = new TexturedGeometry(vertices, indices, coords, "nehe.gif");
-
-  EngineElement e1 = draw_state.addElement(triangle);
-  e1.drawable_.position_ = new Vector3(-1.5, 0.0, -7.0);
   Quaternion rotation1 = new Quaternion(0.0,0.0,0.0,1.0);
-  rotation1.setAxisAngle(new Vector3(0.0,1.0,0.0), radians(20.0));
-  e1.drawable_.rotation_ = rotation1;
-
-  EngineElement e3 = draw_state.addElement(quad);
-  e3.drawable_.position_ = new Vector3(1.5, 0.0, -7.0);
+  rotation1.setEuler(radians(0.0), radians(-40.0), radians(45.0));
+  e2.drawable_.rotation_ = rotation1;
 
   gameLoop.state = new GameState(renderer);
 
