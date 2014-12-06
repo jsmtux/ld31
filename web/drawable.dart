@@ -16,6 +16,7 @@ class Drawable
 
   Vector3 position_ = new Vector3(0.0,0.0,0.0);
   Quaternion rotation_ = new Quaternion(0.0,0.0,0.0,1.0);
+  double size = 1.0;
 
   Shader shader_;
 

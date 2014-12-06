@@ -20,6 +20,7 @@ class Renderer
 
   Matrix4 m_perspective_;
   Matrix4 m_modelview_;
+  Matrix4 m_worldview_;
 
   Shader color_shader_;
   Shader texture_shader_;
@@ -35,8 +36,12 @@ class Renderer
     color_shader_ = createColorShader(gl_);
     texture_shader_ = createTextureShader(gl_);
 
-    gl_.clearColor(0.0, 0, 0, 1.0);
+    m_worldview_ = new Matrix4.identity();
+
+    gl_.clearColor(1.0, 0.0, 1.0, 1.0);
     gl_.enable(webgl.RenderingContext.DEPTH_TEST);
+    gl_.blendFunc(webgl.RenderingContext.SRC_ALPHA, webgl.RenderingContext.ONE_MINUS_SRC_ALPHA);
+    gl_.enable(webgl.RenderingContext.BLEND);
   }
 
   void addDrawable(Drawable drawable)
@@ -57,6 +62,7 @@ class Renderer
       m_modelview_ = new Matrix4.identity();
       m_modelview_.translate(d.position_);
       m_modelview_.setRotation(d.rotation_.asRotationMatrix());
+      m_modelview_.scale(d.size, d.size, d.size);
 
       gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, d.pos_buffer_);
       gl_.vertexAttribPointer(d.shader_.a_vertex_pos_, dimensions_, webgl.RenderingContext.FLOAT, false, 0, 0);
@@ -74,7 +80,7 @@ class Renderer
 
       gl_.bindBuffer(webgl.RenderingContext.ELEMENT_ARRAY_BUFFER, d.ind_buffer_);
 
-      d.shader_.setMatrixUniforms(m_perspective_, m_modelview_);
+      d.shader_.setMatrixUniforms(m_perspective_, m_modelview_, m_worldview_);
       gl_.drawElements(webgl.RenderingContext.TRIANGLES, d.vertices_, webgl.RenderingContext.UNSIGNED_SHORT, 0);
     }
   }

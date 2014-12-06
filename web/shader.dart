@@ -13,6 +13,7 @@ class Shader
   int a_vertex_coord_;
   webgl.UniformLocation u_m_perspective_;
   webgl.UniformLocation u_m_modelview_;
+  webgl.UniformLocation u_m_worldview_;
 
   webgl.RenderingContext gl_;
 
@@ -62,9 +63,10 @@ class Shader
 
     u_m_perspective_ = gl.getUniformLocation(shader_program_, "uPMatrix");
     u_m_modelview_ = gl.getUniformLocation(shader_program_, "uMVMatrix");
+    u_m_worldview_ = gl.getUniformLocation(shader_program_, "uWVMatrix");
   }
 
-  void setMatrixUniforms(Matrix4 m_perspective_, Matrix4 m_modelview_)
+  void setMatrixUniforms(Matrix4 m_perspective_, Matrix4 m_modelview_, Matrix4 m_worldview_)
   {
     Float32List tmpList = new Float32List(16);
     m_perspective_.copyIntoArray(tmpList);
@@ -72,6 +74,9 @@ class Shader
 
     m_modelview_.copyIntoArray(tmpList);
     gl_.uniformMatrix4fv(u_m_modelview_, false, tmpList);
+
+    m_worldview_.copyIntoArray(tmpList);
+    gl_.uniformMatrix4fv(u_m_worldview_, false, tmpList);
   }
 
   void makeCurrent()
@@ -86,12 +91,13 @@ attribute vec3 aVertexPosition;
 attribute vec4 aVertexColor;
 
 uniform mat4 uMVMatrix;
+uniform mat4 uWVMatrix;
 uniform mat4 uPMatrix;
 
 varying vec4 vColor;
 
 void main(void) {
-  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+  gl_Position = uPMatrix * uWVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
   vColor = aVertexColor;
 }
 """;
@@ -111,12 +117,13 @@ attribute vec3 aVertexPosition;
 attribute vec2 aTextureCoord;
 
 uniform mat4 uMVMatrix;
+uniform mat4 uWVMatrix;
 uniform mat4 uPMatrix;
 
 varying vec2 vTextureCoord;
 
 void main(void) {
-  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+  gl_Position = uPMatrix * uWVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
   vTextureCoord = aTextureCoord;
 }
 """;

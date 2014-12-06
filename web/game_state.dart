@@ -9,6 +9,7 @@ import 'drawable.dart';
 import 'renderer.dart';
 import 'element.dart';
 import 'base_geometry.dart';
+import 'behaviour.dart';
 
 class GameState extends SimpleHtmlState
 {
@@ -16,7 +17,7 @@ class GameState extends SimpleHtmlState
   List<EngineElement> elements_ = new List<EngineElement>();
   DrawableFactory drawable_factory_;
 
-  EngineElement addElement(BaseGeometry geom)
+  EngineElement addElement(BaseGeometry geom, Behaviour behaviour)
   {
     Drawable drawable;
     if (geom is TexturedGeometry)
@@ -27,8 +28,15 @@ class GameState extends SimpleHtmlState
     {
       drawable = drawable_factory_.createColoredDrawable(geom);
     }
-    EngineElement toAdd = new EngineElement(drawable);
+
+    EngineElement toAdd = new EngineElement(drawable, behaviour);
+    if (behaviour != null)
+    {
+      behaviour.init(drawable);
+    }
+
     elements_.add(toAdd);
+    int num_elements = elements_.length;
     renderer_.addDrawable(toAdd.drawable_);
     return toAdd;
   }
@@ -37,10 +45,18 @@ class GameState extends SimpleHtmlState
     renderer_.render();
   }
 
-  void onKeyDown(KeyboardEvent event) {
-    event.preventDefault();
+  void onUpdate(GameLoop gameLoop)
+  {
+    for (EngineElement element in elements_)
+    {
+      if(element.behaviour_ != null)
+      {
+        element.behaviour_.update();
+      }
+    }
+  }
 
-    print("Key event");
+  void onKeyDown(KeyboardEvent event) {
   }
 
   GameState(Renderer renderer)
