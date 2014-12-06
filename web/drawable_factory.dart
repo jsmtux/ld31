@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'drawable.dart';
 import 'renderer.dart';
 import 'base_geometry.dart';
-import 'texture.dart';
 import 'texture_manager.dart';
 
 class DrawableFactory
@@ -19,11 +18,15 @@ class DrawableFactory
     Drawable ret = new Drawable();
     ret.pos_buffer_ = renderer_.gl_.createBuffer();
     renderer_.gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, ret.pos_buffer_);
-
     renderer_.gl_.bufferDataTyped(webgl.RenderingContext.ARRAY_BUFFER,
         new Float32List.fromList(geometry.vertices_), webgl.RenderingContext.STATIC_DRAW);
 
-    ret.vertices_ = geometry.vertices_.length~/3;
+    ret.ind_buffer_ = renderer_.gl_.createBuffer();
+    renderer_.gl_.bindBuffer(webgl.RenderingContext.ELEMENT_ARRAY_BUFFER, ret.ind_buffer_);
+    renderer_.gl_.bufferDataTyped(webgl.RenderingContext.ELEMENT_ARRAY_BUFFER, new Uint16List.fromList(geometry.indices_),
+        webgl.RenderingContext.STATIC_DRAW);
+
+    ret.vertices_ = geometry.indices_.length;
 
     return ret;
   }
@@ -34,7 +37,6 @@ class DrawableFactory
 
     ret.color_buffer_ = renderer_.gl_.createBuffer();
     renderer_.gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, ret.color_buffer_);
-
     renderer_.gl_.bufferDataTyped(webgl.RenderingContext.ARRAY_BUFFER, new Float32List.fromList(geometry.colors_),
       webgl.RenderingContext.STATIC_DRAW);
 
@@ -49,7 +51,6 @@ class DrawableFactory
 
     ret.tex_buffer_ = renderer_.gl_.createBuffer();
     renderer_.gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, ret.tex_buffer_);
-
     renderer_.gl_.bufferDataTyped(webgl.RenderingContext.ARRAY_BUFFER,
         new Float32List.fromList(geometry.text_coords_), webgl.RenderingContext.STATIC_DRAW);
 

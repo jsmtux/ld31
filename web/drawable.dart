@@ -10,6 +10,7 @@ import 'shader.dart';
 class Drawable
 {
   webgl.Buffer pos_buffer_;
+  webgl.Buffer ind_buffer_;
   webgl.Buffer color_buffer_;
   webgl.Buffer tex_buffer_;
 

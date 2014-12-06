@@ -72,8 +72,10 @@ class Renderer
         gl_.vertexAttribPointer(d.shader_.a_vertex_coord_, 2, webgl.RenderingContext.FLOAT, false, 0, 0);
       }
 
+      gl_.bindBuffer(webgl.RenderingContext.ELEMENT_ARRAY_BUFFER, d.ind_buffer_);
+
       d.shader_.setMatrixUniforms(m_perspective_, m_modelview_);
-      gl_.drawArrays(webgl.RenderingContext.TRIANGLES, 0, d.vertices_);
+      gl_.drawElements(webgl.RenderingContext.TRIANGLES, d.vertices_, webgl.RenderingContext.UNSIGNED_SHORT, 0);
     }
   }
 }

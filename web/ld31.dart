@@ -25,26 +25,27 @@ main() {
     0.0, 1.0, 0.0, 1.0,
     0.0, 0.0, 1.0, 1.0
   ];
-  BaseGeometry triangle = new ColoredGeometry(vertices, colors);
+
+  List<int> indices = [0, 1, 2];
+
+  BaseGeometry triangle = new ColoredGeometry(vertices, indices, colors);
 
   vertices = [
                   1.0,  1.0,  0.0,
                  -1.0,  1.0,  0.0,
                   1.0, -1.0,  0.0,
-                 -1.0,  1.0,  0.0,
-                  1.0, -1.0,  0.0,
-                  -1.0, -1.0,  0.0
+                 -1.0, -1.0,  0.0
              ];
   List<double> coords = [
     1.0, 1.0,
     0.0, 1.0,
     1.0, 0.0,
-    0.0, 1.0,
-    1.0, 0.0,
     0.0, 0.0
   ];
 
-  BaseGeometry quad = new TexturedGeometry(vertices, coords, "nehe.gif");
+  indices = [0, 1, 2, 1, 2, 3];
+
+  BaseGeometry quad = new TexturedGeometry(vertices, indices, coords, "nehe.gif");
 
   EngineElement e1 = draw_state.addElement(triangle);
   e1.drawable_.position_ = new Vector3(-1.5, 0.0, -7.0);
