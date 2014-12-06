@@ -1,0 +1,6 @@
+name: ludumdare31
+description: Dart+WebGl game for ludum dare 31
+dependencies:
+  browser: any
+  game_loop: any
+  vector_math: any
