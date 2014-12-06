@@ -35,6 +35,32 @@ class TerrainBehaviour extends Behaviour
     Vector3 ret = new Vector3(0.0, 0.0, 0.0);
     ret.xyz = drawable_.position_.xyz;
     ret.xy += relative.xy;
+
+    int int_x = relative.x * 5 ~/ 1;
+    int int_y = relative.y * 5 ~/ 1;
+
+    double v_0 = getVertex(int_x, int_y).z;
+    double v_1 = getVertex(int_x + 1, int_y).z;
+    double v_2 = getVertex(int_x, int_y).z;
+    double v_3 = getVertex(int_x, int_y + 1).z;
+
+    double diff_x = relative.x*5 - int_x;
+    double diff_y = relative.y*5 - int_y;
+
+    print('diff is $diff_x, $diff_y');
+
+    double inc_x = v_0 * (1 - diff_x) + v_1 * (diff_x);
+    double inc_y = v_2 * (1 - diff_y) + v_3 * (diff_y);
+
+    if (v_0 != v_1)
+    {
+      ret.z += inc_x;
+    }
+    else
+    {
+      ret.z += inc_y;
+    }
+
     return ret;
   }
 
