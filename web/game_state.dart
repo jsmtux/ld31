@@ -51,7 +51,7 @@ class GameState extends SimpleHtmlState
     {
       if(element.behaviour_ != null)
       {
-        element.behaviour_.update();
+        element.behaviour_.update(this);
       }
     }
   }

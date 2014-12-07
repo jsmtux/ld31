@@ -49,6 +49,34 @@ class Renderer
     drawables_.add(drawable);
   }
 
+  void renderElement(Drawable d)
+  {
+    d.shader_.makeCurrent();
+    m_modelview_ = new Matrix4.identity();
+    m_modelview_.translate(d.position_);
+    m_modelview_.setRotation(d.rotation_.asRotationMatrix());
+    m_modelview_.scale(d.size, d.size, d.size);
+
+    gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, d.pos_buffer_);
+    gl_.vertexAttribPointer(d.shader_.a_vertex_pos_, dimensions_, webgl.RenderingContext.FLOAT, false, 0, 0);
+    if(d.color_buffer_ != null)
+    {
+      gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, d.color_buffer_);
+      gl_.vertexAttribPointer(d.shader_.a_vertex_color_, 4, webgl.RenderingContext.FLOAT, false, 0, 0);
+    }
+    if(d.tex_buffer_ != null)
+    {
+      d.tex_.makeCurrent();
+      gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, d.tex_buffer_);
+      gl_.vertexAttribPointer(d.shader_.a_vertex_coord_, 2, webgl.RenderingContext.FLOAT, false, 0, 0);
+    }
+
+    gl_.bindBuffer(webgl.RenderingContext.ELEMENT_ARRAY_BUFFER, d.ind_buffer_);
+
+    d.shader_.setMatrixUniforms(m_perspective_, m_modelview_, m_worldview_);
+    gl_.drawElements(webgl.RenderingContext.TRIANGLES, d.vertices_, webgl.RenderingContext.UNSIGNED_SHORT, 0);
+  }
+
   void render()
   {
     gl_.viewport(0, 0, view_width_, view_height_);
@@ -56,32 +84,24 @@ class Renderer
 
     m_perspective_ = makePerspectiveMatrix(radians(45.0), view_width_/view_height_, 0.1, 100.0);
 
-    for (Drawable d in drawables_)
+    List<Drawable> sorted_drawables = new List<Drawable>();
+    for(Drawable d in drawables_)
     {
-      d.shader_.makeCurrent();
-      m_modelview_ = new Matrix4.identity();
-      m_modelview_.translate(d.position_);
-      m_modelview_.setRotation(d.rotation_.asRotationMatrix());
-      m_modelview_.scale(d.size, d.size, d.size);
-
-      gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, d.pos_buffer_);
-      gl_.vertexAttribPointer(d.shader_.a_vertex_pos_, dimensions_, webgl.RenderingContext.FLOAT, false, 0, 0);
-      if(d.color_buffer_ != null)
+      if(d.tex_ == null)
       {
-        gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, d.color_buffer_);
-        gl_.vertexAttribPointer(d.shader_.a_vertex_color_, 4, webgl.RenderingContext.FLOAT, false, 0, 0);
+        renderElement(d);
       }
-      if(d.tex_buffer_ != null)
+      else
       {
-        d.tex_.makeCurrent();
-        gl_.bindBuffer(webgl.RenderingContext.ARRAY_BUFFER, d.tex_buffer_);
-        gl_.vertexAttribPointer(d.shader_.a_vertex_coord_, 2, webgl.RenderingContext.FLOAT, false, 0, 0);
+        sorted_drawables.add(d);
       }
-
-      gl_.bindBuffer(webgl.RenderingContext.ELEMENT_ARRAY_BUFFER, d.ind_buffer_);
-
-      d.shader_.setMatrixUniforms(m_perspective_, m_modelview_, m_worldview_);
-      gl_.drawElements(webgl.RenderingContext.TRIANGLES, d.vertices_, webgl.RenderingContext.UNSIGNED_SHORT, 0);
     }
+    sorted_drawables.sort((x,y) => y.position_.y.compareTo(x.position_.y));
+    gl_.disable(webgl.RenderingContext.DEPTH_TEST);
+    for(Drawable d in sorted_drawables)
+    {
+      renderElement(d);
+    }
+    gl_.enable(webgl.RenderingContext.DEPTH_TEST);
   }
 }
