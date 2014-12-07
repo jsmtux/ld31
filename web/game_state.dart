@@ -32,7 +32,7 @@ class GameState extends SimpleHtmlState
     EngineElement toAdd = new EngineElement(drawable, behaviour);
     if (behaviour != null)
     {
-      behaviour.init(drawable);
+      behaviour.init(toAdd);
     }
 
     elements_.add(toAdd);

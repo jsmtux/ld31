@@ -12,7 +12,7 @@ import 'game_state.dart';
 
 abstract class Behaviour
 {
-  void init(Drawable drawable);
+  void init(EngineElement parent);
   void update(GameState state);
 }
 
@@ -24,40 +24,48 @@ class TerrainBehaviour extends Behaviour
 
   TerrainBehaviour(this.terrain_geometry);
 
-  void init(Drawable drawable)
+  void init(EngineElement parent)
   {
-    drawable_ = drawable;
+    drawable_ = parent.drawable_;
     num_coords_ = sqrt(terrain_geometry.vertices_.length/3)~/1;
   }
   void update(GameState state){}
 
   Vector3 getAbsolutePos(Vector2 relative)
   {
-    Vector3 ret = new Vector3(0.0, 0.0, 0.0);
-    ret.xyz = drawable_.position_.xyz;
-    ret.xy += relative.xy;
-
-    int int_x = relative.x * 5 ~/ 1;
-    int int_y = relative.y * 5 ~/ 1;
-
-    double v_0 = getVertex(int_x, int_y).z;
-    double v_1 = getVertex(int_x + 1, int_y).z;
-    double v_2 = getVertex(int_x, int_y).z;
-    double v_3 = getVertex(int_x, int_y + 1).z;
-
-    double diff_x = relative.x*5 - int_x;
-    double diff_y = relative.y*5 - int_y;
-
-    double inc_x = v_0 * (1 - diff_x) + v_1 * (diff_x);
-    double inc_y = v_2 * (1 - diff_y) + v_3 * (diff_y);
-
-    if (v_0 != v_1)
+    Vector3 ret;
+    if (relative.x < 0 || relative.y < 0 || relative.x > 2.75 || relative.y > 2.75)
     {
-      ret.z += inc_x;
+
     }
     else
     {
-      ret.z += inc_y;
+      ret = new Vector3(0.0, 0.0, 0.0);
+      ret.xyz = drawable_.position_.xyz;
+      ret.xy += relative.xy;
+
+      int int_x = relative.x * 5 ~/ 1;
+      int int_y = relative.y * 5 ~/ 1;
+
+      double v_0 = getVertex(int_x, int_y).z;
+      double v_1 = getVertex(int_x + 1, int_y).z;
+      double v_2 = getVertex(int_x, int_y).z;
+      double v_3 = getVertex(int_x, int_y + 1).z;
+
+      double diff_x = relative.x*5 - int_x;
+      double diff_y = relative.y*5 - int_y;
+
+      double inc_x = v_0 * (1 - diff_x) + v_1 * (diff_x);
+      double inc_y = v_2 * (1 - diff_y) + v_3 * (diff_y);
+
+      if (v_0 != v_1)
+      {
+        ret.z += inc_x;
+      }
+      else
+      {
+        ret.z += inc_y;
+      }
     }
 
     return ret;
@@ -73,28 +81,38 @@ class TerrainBehaviour extends Behaviour
 
 class SceneElementBehaviour extends Behaviour
 {
+  EngineElement parent_;
   Drawable drawable_;
   EngineElement terrain_;
   Vector2 relative_position_ = new Vector2(0.0,0.0);
 
   SceneElementBehaviour(this.terrain_);
 
-  void updatePos()
+  bool move(Vector2 to)
   {
+    bool ret = false;
     TerrainBehaviour terrain_behaviour = terrain_.behaviour_;
-    drawable_.position_ = terrain_behaviour.getAbsolutePos(relative_position_);
-    drawable_.position_.x -= 0.08;
+    Vector3 new_pos = terrain_behaviour.getAbsolutePos(to);
+    if (new_pos != null)
+    {
+      relative_position_ = to.clone();
+      drawable_.position_ = terrain_behaviour.getAbsolutePos(relative_position_);
+      drawable_.position_.x -= 0.08;
+      ret = true;
+    }
+    return ret;
   }
 
-  void init(Drawable drawable)
+  void init(EngineElement parent)
   {
-    drawable_ = drawable;
-    updatePos();
-    var cur_pos = drawable.position_;
-    drawable.size = 0.08;
+    parent_ = parent;
+    drawable_ = parent.drawable_;
+    move(new Vector2.zero());
+    var cur_pos = drawable_.position_;
+    drawable_.size = 0.08;
     Quaternion rot1 = new Quaternion(0.0, 0.0, 0.0, 1.0);
     rot1.setAxisAngle(new Vector3(1.0,0.0,0.0), radians(90.0));
-    drawable.rotation_ = rot1;
+    drawable_.rotation_ = rot1;
   }
 
   void update(GameState state){}
@@ -118,6 +136,7 @@ class FollowerBehaviour extends FollowableBehaviour
   :super(terrain)
   {
     drawable_ = previous.drawable_;
+    parent_ = previous.parent_;
     relative_position_ = previous.relative_position_;
 
     while(following_.followed_!=null)
@@ -145,8 +164,7 @@ class FollowerBehaviour extends FollowableBehaviour
     {
       if (len > 0.01)
       {
-        relative_position_ += diff.normalize() * speed_;
-        updatePos();
+        move(relative_position_ + diff.normalize() * speed_);
       }
       else
       {
@@ -179,19 +197,18 @@ class SheepBehaviour extends SceneElementBehaviour
   Vector2 walk_initial_position_ = new Vector2(0.0,0.0);
   Random rng = new Random();
   Vector2 random_position_;
-  int wait_time_;
+  int wait_time_ = 0;
   SheepBehaviour(EngineElement terrain, Vector2 initial_position)
   : super(terrain)
   {
     initial_position_ = initial_position / 5.0;
   }
 
-  void init(Drawable drawable)
+  void init(EngineElement parent)
   {
-    super.init(drawable);
-    relative_position_.xy = initial_position_.xy;
+    super.init(parent);
     wait_time_ = rng.nextInt(300);
-    updatePos();
+    move(initial_position_);
   }
 
   void update(GameState state)
@@ -220,8 +237,7 @@ class SheepBehaviour extends SceneElementBehaviour
       else
       {
         Vector2 diff = (random_position_ - walk_initial_position_)/100.0;
-        relative_position_ += diff;
-        updatePos();
+        move(relative_position_ + diff);
       }
     }
   }
@@ -260,19 +276,19 @@ class MainCharacterBehaviour extends FollowableBehaviour
   {
     if(keyboard_.isDown(Keyboard.UP))
     {
-      relative_position_ += new Vector2(0.0, 0.005);
+      move(relative_position_ + new Vector2(0.0, 0.005));
     }
     if(keyboard_.isDown(Keyboard.DOWN))
     {
-      relative_position_ += new Vector2(0.0, -0.005);
+      move(relative_position_ + new Vector2(0.0, -0.005));
     }
     if(keyboard_.isDown(Keyboard.LEFT))
     {
-      relative_position_ += new Vector2(-0.005, 0.0);
+      move(relative_position_ + new Vector2(-0.005, 0.0));
     }
     if(keyboard_.isDown(Keyboard.RIGHT))
     {
-      relative_position_ += new Vector2(0.005, 0.0);
+      move(relative_position_ + new Vector2(0.005, 0.0));
     }
     if(keyboard_.isDown(Keyboard.SPACE))
     {
@@ -286,6 +302,7 @@ class MainCharacterBehaviour extends FollowableBehaviour
           if(calculateVectorLength(diff) < 0.1)
           {
             FollowerBehaviour sheep_behaviour = new FollowerBehaviour(terrain_ ,this, 0.005, sheep_found.behaviour_);
+            sheep_behaviour.parent_ = sheep_found;
             sheep_found.behaviour_ = sheep_behaviour;
           }
         }
@@ -300,7 +317,6 @@ class MainCharacterBehaviour extends FollowableBehaviour
     {
       space_key_released_ = true;
     }
-    updatePos();
   }
 }
 
@@ -321,11 +337,10 @@ class WolfBehaviour extends SceneElementBehaviour
   EngineElement sheep_element_;
   int sleep_time_ = 0;
 
-  void init(Drawable drawable)
+  void init(EngineElement parent)
   {
-    super.init(drawable);
-    relative_position_.xy = initial_position_.xy;
-    updatePos();
+    super.init(parent);
+    move(initial_position_);
   }
 
   void updateNormalWalk()
@@ -333,22 +348,22 @@ class WolfBehaviour extends SceneElementBehaviour
     switch(dir)
     {
       case 0:
-        relative_position_.x += speed_;
+        move(relative_position_ + new Vector2(speed_, 0.0));
         if (relative_position_.x > initial_position_.x + movement_.x)
           dir = 1;
         break;
       case 1:
-        relative_position_.y += speed_;
+        move(relative_position_ + new Vector2(0.0, speed_));
         if (relative_position_.y > initial_position_.y +  movement_.y)
           dir = 2;
         break;
       case 2:
-        relative_position_.x -= speed_;
+        move(relative_position_ + new Vector2(-speed_, 0.0));
         if (relative_position_.x < initial_position_.x)
           dir = 3;
         break;
       case 3:
-        relative_position_.y -= speed_;
+        move(relative_position_ + new Vector2(0.0, -speed_));
         if (relative_position_.y < initial_position_.y)
         {
           dir = 0;
@@ -401,17 +416,28 @@ class WolfBehaviour extends SceneElementBehaviour
         Vector2 dir = chasing_sheep_.relative_position_ - relative_position_;
         double distance = calculateVectorLength(dir);
         dir.normalize();
-        relative_position_ += dir * speed_;
+        move(relative_position_ + dir * speed_);
         if(distance < 0.001)
         {
           if (chasing_sheep_ is FollowerBehaviour)
           {
             FollowerBehaviour current = chasing_sheep_;
             current.following_.followed_ = null;
+            while (current.followed_ != null)
+            {
+              current = current.followed_;
+              SheepBehaviour new_behaviour = new SheepBehaviour(terrain_, new Vector2.copy(current.relative_position_));
+              current.parent_.behaviour_ = new_behaviour;
+              new_behaviour.drawable_ = current.drawable_;
+              new_behaviour.initial_position_ = new Vector2.copy(current.relative_position_);
+              new_behaviour.walk_initial_position_ = new Vector2.copy(current.relative_position_);
+              new_behaviour.relative_position_ = new Vector2.copy(current.relative_position_);
+            }
           }
           SceneElementBehaviour behaviour =new DeadSheepBehaviour();
           sheep_element_.behaviour_ = behaviour;
           behaviour.drawable_ = sheep_element_.drawable_;
+          behaviour.parent_ = sheep_element_;
           chasing_sheep_ = null;
           sleep_time_ = 100;
         }
@@ -420,7 +446,6 @@ class WolfBehaviour extends SceneElementBehaviour
       {
         updateNormalWalk();
       }
-      updatePos();
     }
   }
 }

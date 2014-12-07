@@ -41,7 +41,7 @@ main() {
   for (int i = 0; i < 40; i++)
   {
     Random rng = new Random();
-    draw_state.addElement(sheep_quad, new SheepBehaviour(terrain_element, new Vector2(rng.nextInt(4)+0.5,rng.nextInt(4)+0.5)));
+    draw_state.addElement(sheep_quad, new SheepBehaviour(terrain_element, new Vector2(rng.nextDouble()*3.0+0.5,rng.nextDouble()*3.0+0.5)));
   }
 
   gameLoop.state = draw_state;
