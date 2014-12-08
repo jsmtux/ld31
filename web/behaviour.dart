@@ -141,7 +141,7 @@ class SceneElementBehaviour extends Behaviour
     var cur_pos = drawable_.position_;
     drawable_.size = 0.07;
     Quaternion rot1 = new Quaternion(0.0, 0.0, 0.0, 1.0);
-    rot1.setAxisAngle(new Vector3(1.0,0.0,0.0), radians(90.0));
+    rot1.setAxisAngle(new Vector3(1.0,0.0,0.0), radians(60.0));
     drawable_.rotation_ = rot1;
   }
 
