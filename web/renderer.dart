@@ -38,7 +38,7 @@ class Renderer
 
     m_worldview_ = new Matrix4.identity();
 
-    gl_.clearColor(1.0, 0.0, 1.0, 1.0);
+    gl_.clearColor(1.0, 1.0, 1.0, 1.0);
     gl_.enable(webgl.RenderingContext.DEPTH_TEST);
     gl_.blendFunc(webgl.RenderingContext.SRC_ALPHA, webgl.RenderingContext.ONE_MINUS_SRC_ALPHA);
     gl_.enable(webgl.RenderingContext.BLEND);

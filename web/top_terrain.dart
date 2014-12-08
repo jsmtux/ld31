@@ -15,7 +15,7 @@ Terrain createTopTerrain()
   ret.addQuad(12, 3, 3, 4, 3);
   ret.addQuad(4,9,11,6,4);
   ret.addQuad(6,9,2,2,3);
-  ret.addQuad(10, 11, 4, 3, 5);
+  ret.addQuad(4, 12, 4, 3, 5);
 
   return ret;
 }
