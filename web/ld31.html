@@ -2,14 +2,22 @@
 
 <html>
   <head>
-    <title>Ludum dare 32 - Entire game on one screen</title>
+    <link rel="stylesheet" type="text/css" href="ld31.css">
+    <title>Ludum dare 31 - Sheep enchanter</title>
   </head>
 
   <body>
+    <h1 class="title">Sheep enchanter</h1>
     <div class="game-container">
       <canvas class="game-element" width="1028" height="600"></canvas>
     </div>
-
+    <div id="rules">
+    In this game you must take the sheep to the top of the hill.<br>
+    The problem is that in this game you are not really cool, so only some sheep will follow you.<br>
+    <font color="grey">Grey</font> sheep are not cool either, so as soon as you press spacebar they will start to follow.<br>
+    <font color="yellow">Golden</font> sheep are kinda cool, so they won't even look at you. But if you are followed by two or more sheep they will change their mind.<br>
+    <font color="red">C</font><font color="yellow">o</font><font color="blue">o</font><font color="green">l</font> sheep are cool. They will only hang out with you if you hang out with cool people.
+    </div>
     <script type="application/dart" src="ld31.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>

@@ -139,7 +139,7 @@ class SceneElementBehaviour extends Behaviour
     drawable_ = parent.drawable_;
     move(new Vector2.zero());
     var cur_pos = drawable_.position_;
-    drawable_.size = 0.08;
+    drawable_.size = 0.07;
     Quaternion rot1 = new Quaternion(0.0, 0.0, 0.0, 1.0);
     rot1.setAxisAngle(new Vector3(1.0,0.0,0.0), radians(90.0));
     drawable_.rotation_ = rot1;
@@ -159,7 +159,7 @@ class ObstacleBehaviour extends SceneElementBehaviour
   {
     super.init(parent);
     setPos(position_);
-    drawable_.size = 0.15;
+    drawable_.size = 0.10;
     TerrainBehaviour terrain_behaviour = terrain_.behaviour_;
     terrain_behaviour.obstacles_.add(position_ + new Vector2(0.06,0.05));
   }
@@ -317,6 +317,10 @@ class MainCharacterBehaviour extends FollowableBehaviour
 
   void update(GameState state)
   {
+    if (relative_position_.x >0.98 && relative_position_.x < 1.42 && relative_position_.y > 2.42 && relative_position_.y < 2.65)
+    {
+      print('finished');
+    }
     if(keyboard_.isDown(Keyboard.UP))
     {
       move(relative_position_ + new Vector2(0.0, 0.005));
@@ -345,9 +349,36 @@ class MainCharacterBehaviour extends FollowableBehaviour
           Vector2 diff = relative_position_ - previous_behaviour.relative_position_;
           if(calculateVectorLength(diff) < 0.1)
           {
-            FollowerBehaviour sheep_behaviour = new FollowerBehaviour(terrain_ ,this, 0.005, sheep_found.behaviour_, previous_behaviour.sheep_level_);
-            sheep_behaviour.parent_ = sheep_found;
-            sheep_found.behaviour_ = sheep_behaviour;
+            bool accepts = false;
+            if (previous_behaviour.sheep_level_ == 1)
+            {
+              accepts = true;
+            }
+            if (previous_behaviour.sheep_level_ == 2)
+            {
+              if (followed_ != null && followed_.followed_ != null)
+              {
+                accepts = true;
+              }
+            }
+            if (previous_behaviour.sheep_level_ == 3)
+            {
+              var followed = followed_;
+              while(followed != null)
+              {
+                if (followed.sheep_level_ == 2)
+                {
+                  accepts = true;
+                }
+                followed = followed.followed_;
+              }
+            }
+            if (accepts)
+            {
+              FollowerBehaviour sheep_behaviour = new FollowerBehaviour(terrain_ ,this, 0.005, sheep_found.behaviour_, previous_behaviour.sheep_level_);
+              sheep_behaviour.parent_ = sheep_found;
+              sheep_found.behaviour_ = sheep_behaviour;
+            }
           }
         }
         else

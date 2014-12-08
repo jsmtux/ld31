@@ -28,7 +28,7 @@ class Terrain
         ret.vertices_.add(i/5);
         ret.vertices_.add(j/5);
         ret.vertices_.add(points_[i][j]/10);
-        ret.colors_.add(points_[i][j]/6 - 0.1);
+        ret.colors_.add(points_[i][j]/6 - 0.4);
         ret.colors_.add(1 - (points_[i][j]/6));
         ret.colors_.add(0.0);
         ret.colors_.add(1.0);
