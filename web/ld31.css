@@ -1,13 +1,11 @@
 
 body {
-  background-color: #F8F8F8;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
   font-weight: normal;
   line-height: 1.2em;
   margin: 15px;
 }
-
 
 
 #rules {
@@ -21,7 +19,6 @@ body {
   font-size: 15px;
   line-height: 30px;
   font-family: 'Orienta', sans-serif;
-  background-color : 'grey';
 }
 
 #sample_container_id {

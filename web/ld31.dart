@@ -32,10 +32,10 @@ main() {
   EngineElement main_char = draw_state.addElement(quad, new MainCharacterBehaviour(terrain_element, gameLoop.keyboard));
 
   BaseGeometry wolf_quad = new TexturedGeometry(quad_vertices, quad_indices, quad_coords, "wolf.gif");
-  /*draw_state.addElement(wolf_quad, new WolfBehaviour(terrain_element, new Vector2(6.5,0.5), new Vector2(1.5,2.0), 0.005));
+  draw_state.addElement(wolf_quad, new WolfBehaviour(terrain_element, new Vector2(6.5,0.5), new Vector2(1.5,2.0), 0.005));
   draw_state.addElement(wolf_quad, new WolfBehaviour(terrain_element, new Vector2(9.5,0.5), new Vector2(1.5,4.5), 0.007));
   draw_state.addElement(wolf_quad, new WolfBehaviour(terrain_element, new Vector2(8.0,5.5), new Vector2(1.5,2.0), 0.002));
-  draw_state.addElement(wolf_quad, new WolfBehaviour(terrain_element, new Vector2(11.0,4.5), new Vector2(1.5,2.0), 0.004));*/
+  draw_state.addElement(wolf_quad, new WolfBehaviour(terrain_element, new Vector2(11.0,4.5), new Vector2(1.5,2.0), 0.004));
 
   BaseGeometry sheep_quad = new TexturedGeometry(quad_vertices, quad_indices, quad_coords, "sheep.gif");
   for (int i = 0; i < 40; i++)
