@@ -1,5 +1,6 @@
 library behaviour;
 
+import 'dart:html';
 import 'dart:math';
 
 import 'package:vector_math/vector_math.dart';
@@ -221,6 +222,23 @@ class FollowerBehaviour extends FollowableBehaviour
       }
     }
   }
+
+  void stopFollowing()
+  {
+    FollowerBehaviour cur_follower = this;
+    cur_follower.following_.followed_ = null;
+    while (cur_follower.followed_ != null && cur_follower.followed_.followed_ != null)
+    {
+      cur_follower = cur_follower.followed_;
+      SheepBehaviour new_behaviour = new SheepBehaviour(terrain_, new Vector2.copy(cur_follower.relative_position_), cur_follower.sheep_level_);
+      cur_follower.parent_.behaviour_ = new_behaviour;
+      new_behaviour.drawable_ = cur_follower.drawable_;
+      new_behaviour.initial_position_ = new Vector2.copy(cur_follower.relative_position_);
+      new_behaviour.walk_initial_position_ = new Vector2.copy(cur_follower.relative_position_);
+      new_behaviour.relative_position_ = new Vector2.copy(cur_follower.relative_position_);
+      new_behaviour.wait_time_ = 300;
+    }
+  }
 }
 
 class DeadSheepBehaviour extends SceneElementBehaviour
@@ -315,8 +333,72 @@ class MainCharacterBehaviour extends FollowableBehaviour
   bool space_key_released_ = true;
   MainCharacterBehaviour(EngineElement terrain, this.keyboard_) : super(terrain);
 
+  ImageElement coolm1 = querySelector("#cool0");
+  ImageElement coolm2 = querySelector("#cool1");
+  ImageElement coolm3 = querySelector("#cool2");
+
+  void updateCoolness(int amount)
+  {
+    if(amount > 0)
+    {
+      coolm1.style.display = "";
+    }
+    else
+    {
+      coolm1.style.display = "none";
+    }
+    if(amount > 1)
+    {
+      coolm2.style.display = "";
+    }
+    else
+    {
+      coolm2.style.display = "none";
+    }
+    if(amount > 2)
+    {
+      coolm3.style.display = "";
+    }
+    else
+    {
+      coolm3.style.display = "none";
+    }
+  }
+
+  int getHowCool()
+  {
+    int cool_level = 0;
+    int num_followers = 0;
+    int max_follower = 0;
+
+    FollowerBehaviour cur_follower = followed_;
+    while(cur_follower != null)
+    {
+      num_followers++;
+      if(cur_follower.sheep_level_ > max_follower)
+      {
+        max_follower = cur_follower.sheep_level_;
+      }
+      cur_follower = cur_follower.followed_;
+    }
+    if (num_followers > 1)
+    {
+      cool_level = 1;
+    }
+    if (max_follower == 2)
+    {
+      cool_level = 2;
+    }
+    if (max_follower == 3)
+    {
+      cool_level = 3;
+    }
+    return cool_level;
+  }
+
   void update(GameState state)
   {
+    updateCoolness(getHowCool());
     if (relative_position_.x >0.98 && relative_position_.x < 1.42 && relative_position_.y > 2.42 && relative_position_.y < 2.65)
     {
       print('finished');
@@ -545,18 +627,7 @@ class WolfBehaviour extends SceneElementBehaviour
           if (chasing_sheep_ is FollowerBehaviour)
           {
             FollowerBehaviour current = chasing_sheep_;
-            current.following_.followed_ = null;
-            while (current.followed_ != null)
-            {
-              current = current.followed_;
-              SheepBehaviour new_behaviour = new SheepBehaviour(terrain_, new Vector2.copy(current.relative_position_), current.sheep_level_);
-              current.parent_.behaviour_ = new_behaviour;
-              new_behaviour.drawable_ = current.drawable_;
-              new_behaviour.initial_position_ = new Vector2.copy(current.relative_position_);
-              new_behaviour.walk_initial_position_ = new Vector2.copy(current.relative_position_);
-              new_behaviour.relative_position_ = new Vector2.copy(current.relative_position_);
-              new_behaviour.wait_time_ = 300;
-            }
+            current.stopFollowing();
           }
           SceneElementBehaviour behaviour =new DeadSheepBehaviour();
           sheep_element_.behaviour_ = behaviour;

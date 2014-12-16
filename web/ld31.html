@@ -1,24 +1,36 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="ld31.css">
-    <title>Ludum dare 31 - Sheep enchanter</title>
-  </head>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Canvas Resize</title>
+    <style>
+      html, body {
+        overflow-y:hidden;
+        overflow-x:hidden;
+        height:100%;
+      }
+      #coolmeter {
+        position:fixed;
+        bottom: 5%;
+        right: 10%;
+      }
+      #coolmeter img{
+        position:absolute;
+        bottom: 0;
+        right: 0;
+      }
+    </style>
+</head>
 
-  <body>
-    <h1 class="title">Sheep enchanter</h1>
-    <div class="game-container">
-      <canvas class="game-element" width="1028" height="600"></canvas>
-    </div>
-    <div id="rules">
-    In this game you must take the sheep to the top of the hill.<br>
-    The problem is that in this game you are not really cool, so only some sheep will follow you.<br>
-    <font color="grey">Grey</font> sheep are not cool either, so as soon as you press spacebar they will start to follow.<br>
-    <font color="yellow">Golden</font> sheep are kinda cool, so they won't even look at you. But if you are followed by two or more sheep they will change their mind.<br>
-    <font color="red">C</font><font color="yellow">o</font><font color="blue">o</font><font color="green">l</font> sheep are cool. They will only hang out with you if you hang out with cool people.
-    </div>
-    <script type="application/dart" src="ld31.dart"></script>
-    <script src="packages/browser/dart.js"></script>
-  </body>
+<body>
+  <div id="coolmeter">
+    <img id="cool0" src="coolmeter1.png" style="display:none"></img>
+    <img id="cool1" src="coolmeter2.png" style="display:none"></img>
+    <img id="cool2" src="coolmeter3.png" style="display:none"></img>
+    <img src="coolmeter.png"></img>
+  </div>
+  <canvas class="game-element">Your browser doesn't support canvas</canvas>
+  <script type="application/dart" src="ld31.dart"></script>
+  <script src="packages/browser/dart.js"></script>
+</body>
 </html>

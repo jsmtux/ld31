@@ -30,6 +30,8 @@ class Renderer
   Renderer(CanvasElement canvas)
   {
     canvas_ = canvas;
+    canvas.height = window.outerHeight;
+    canvas.width = window.outerWidth;
     view_width_ = canvas.width;
     view_height_ = canvas.height;
     gl_ = canvas.getContext('experimental-webgl');

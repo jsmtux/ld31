@@ -20,7 +20,7 @@ main() {
   Renderer renderer = new Renderer(canvas);
   GameState draw_state = new GameState(renderer);
 
-  renderer.m_worldview_.translate(-1.4, 2.0, -1.0);
+  renderer.m_worldview_.translate(-1.5, 2.0, -1.0);
   renderer.m_worldview_.rotate(new Vector3(1.0,0.0,0.0), radians(-45.0));
 
   Terrain terrain = createTopTerrain();
