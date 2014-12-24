@@ -30,20 +30,30 @@ class Renderer
   Renderer(CanvasElement canvas)
   {
     canvas_ = canvas;
-    canvas.height = window.outerHeight;
-    canvas.width = window.outerWidth;
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
     view_width_ = canvas.width;
     view_height_ = canvas.height;
+    window.onResize.listen((event) {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      view_width_ = canvas.width;
+      view_height_ = canvas.height;
+          });
     gl_ = canvas.getContext('experimental-webgl');
     color_shader_ = createColorShader(gl_);
     texture_shader_ = createTextureShader(gl_);
-
     m_worldview_ = new Matrix4.identity();
 
     gl_.clearColor(1.0, 1.0, 1.0, 1.0);
     gl_.enable(webgl.RenderingContext.DEPTH_TEST);
     gl_.blendFunc(webgl.RenderingContext.SRC_ALPHA, webgl.RenderingContext.ONE_MINUS_SRC_ALPHA);
     gl_.enable(webgl.RenderingContext.BLEND);
+  }
+
+  void resize(Event e)
+  {
+
   }
 
   void addDrawable(Drawable drawable)

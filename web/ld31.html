@@ -2,23 +2,88 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Canvas Resize</title>
+    <title>Sheep enchanter</title>
     <style>
       html, body {
         overflow-y:hidden;
         overflow-x:hidden;
         height:100%;
+        font: 15px 'LeagueGothicRegular';
       }
       #coolmeter {
         position:fixed;
         bottom: 5%;
         right: 10%;
+        width: 20%;
+        height: 15%;
       }
       #coolmeter img{
         position:absolute;
         bottom: 0;
         right: 0;
+        width: 100%;
+        height: 100%;
       }
+      .modalDialog {
+        position: fixed;
+        font-family: Arial, Helvetica, sans-serif;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 99999;
+        opacity:0;
+        -webkit-transition: opacity 400ms ease-in;
+        -moz-transition: opacity 400ms ease-in;
+        transition: opacity 400ms ease-in;
+        pointer-events: none;
+      }
+      .modalDialog:target {
+        opacity:1;
+        pointer-events: auto;
+      }
+
+      .modalDialog > div {
+        width: 550px;
+        height: 400px;
+        position: relative;
+        margin: 10% auto;
+        padding: 5px 20px 13px 20px;
+        border-radius: 10px;
+        background: #fff;
+        background: -moz-linear-gradient(#fff, #999);
+        background: -webkit-linear-gradient(#fff, #999);
+        background: -o-linear-gradient(#fff, #999);
+        text-align: center;
+      }
+
+      .nextdialog {
+        position: absolute;
+        right: 15px;
+        bottom: 15px;
+      }
+
+      .prevdialog {
+        position: absolute;
+        left: 15px;
+        bottom: 15px;
+      }
+
+      h1 {
+        text-shadow: 0px 1px 1px #4d4d4d;
+        color: #222;
+        font: 80px 'LeagueGothicRegular';
+      }
+
+      h2 {
+        text-shadow: 0px 1px 1px #4d4d4d;
+        color: #222;
+        font: 30px 'LeagueGothicRegular';
+      }
+
+
+      .close:hover { background: #00d9ff; }
     </style>
 </head>
 
@@ -27,7 +92,97 @@
     <img id="cool0" src="coolmeter1.png" style="display:none"></img>
     <img id="cool1" src="coolmeter2.png" style="display:none"></img>
     <img id="cool2" src="coolmeter3.png" style="display:none"></img>
-    <img src="coolmeter.png"></img>
+    <img id="coolbase" src="coolmeter.png" style="display:none" ></img>
+  </div>
+  <div id="initMenu" class="modalDialog">
+    <div>
+      <h1>Sheep enchanter</h1>
+      <p><a href="#close">PLAY</a></p>
+      <p><a href="#howto1">HOW TO</a></p>
+    </div>
+  </div>
+  <div id="howto1" class="modalDialog">
+    <div>
+      <h2>OBJECTIVE</h2>
+      <p>In this game you must take at least a cool sheep to the top of the hill</p>
+      <img src="objective.png"/>
+      <p><a href="#howto2" class="nextdialog">NEXT</a></p>
+      <p><a href="#initMenu" class="prevdialog">MENU</a></p>
+    </div>
+  </div>
+  <div id="howto2" class="modalDialog">
+    <div>
+      <h2>SHEEP</h2>
+      <p>You are not really cool, so only some sheep will follow you</p>
+      <img src="some_sheep.png"/>
+      <p><a href="#howto3" class="nextdialog">NEXT</a></p>
+      <p><a href="#initMenu" class="prevdialog">MENU</a></p>
+    </div>
+  </div>
+  <div id="howto3" class="modalDialog">
+    <div>
+      <h2>Sheep types</h2>
+      <div>
+        <p style="float: left;"><img src="sheep.png"/></p>
+        <p><font color="grey">Grey sheep</font> are not cool either, so as soon as you press spacebar they will start to follow.</p>
+      </div>
+      <div style="clear: left;">
+        <p style="float: left;"><img src="sheep_gold.png"/></p>
+        <p><font color="yellow">Golden sheep</font> are kinda cool, so they won't follow you.
+          However, if you are being followed by two or more sheep they may change their mind.</p>
+      </div>
+      <div style="clear: left;">
+        <p style="float: left;"><img src="sheep_cool.png"/></p>
+        <p><font color="red">C</font><font color="yellow">o</font><font color="blue">o</font><font color="green">l</font> sheep are cool.
+          They won't even look at you. However, if you are being followed by two or more sheep they may change their mind.</p>
+      </div>
+      <p><a href="#initMenu" class="nextdialog">MENU</a></p>
+    </div>
+  </div>
+  <div id="end1" class="modalDialog">
+    <div>
+      <h2>Totally uncool end</h2>
+      <p>Ok, you reached the end. Good for you.</p>
+      <p>Next time try to bring some sheep</p>
+      <p><a href="#close" class="nextdialog">Continue</a></p>
+      <p><a href="#initMenu" class="prevdialog">MENU</a></p>
+    </div>
+  </div>
+  <div id="end2" class="modalDialog">
+    <div>
+      <h2>Nearly totally uncool end</h2>
+      <p>Ok, you reached the end. You even managed to bring a sheep with you. Good for you both.</p>
+      <p>Next time try to bring some more sheep. You could even bring a cool one!</p>
+      <p><a href="#close" class="nextdialog">Continue</a></p>
+      <p><a href="#initMenu" class="prevdialog">MENU</a></p>
+    </div>
+  </div>
+  <div id="end3" class="modalDialog">
+    <div>
+      <h2>Uncool end</h2>
+      <p>Hey, you brought some uncool sheep. You are starting to look cool.</p>
+      <p>Try to talk to those kinda cool golden sheep!</p>
+      <p><a href="#close" class="nextdialog">Continue</a></p>
+      <p><a href="#initMenu" class="prevdialog">MENU</a></p>
+    </div>
+  </div>
+  <div id="end4" class="modalDialog">
+    <div>
+      <h2>Kinda cool end</h2>
+      <p>Hey, cool guy. Look at you surrounded by the kinda cool sheep.</p>
+      <p>No sheep could resist your coolnes now, so go for a really cool one!</p>
+      <p><a href="#close" class="nextdialog">Continue</a></p>
+      <p><a href="#initMenu" class="prevdialog">MENU</a></p>
+    </div>
+  </div>
+  <div id="end5" class="modalDialog">
+    <div>
+      <h2>Cool end</h2>
+      <p>COOOOOOOOOOOOL!!.</p>
+      <p>Game over.</p>
+      <p><a href="#close" class="nextdialog">Continue</a></p>
+      <p><a href="#initMenu" class="prevdialog">MENU</a></p>
+    </div>
   </div>
   <canvas class="game-element">Your browser doesn't support canvas</canvas>
   <script type="application/dart" src="ld31.dart"></script>

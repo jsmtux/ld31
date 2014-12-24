@@ -187,6 +187,7 @@ class FollowerBehaviour extends FollowableBehaviour
       following_ = following_.followed_;
     }
     following_.followed_ = this;
+    followed_ = null;
   }
 
   void remove()
@@ -331,15 +332,24 @@ class MainCharacterBehaviour extends FollowableBehaviour
 {
   Keyboard keyboard_;
   bool space_key_released_ = true;
-  MainCharacterBehaviour(EngineElement terrain, this.keyboard_) : super(terrain);
+  bool finished_ = false;
+
+  int cool_level_ = 0;
+  int num_followers_ = 0;
+  int max_follower_ = 0;
+
+  MainCharacterBehaviour(EngineElement terrain, this.keyboard_) : super(terrain)
+  {
+    querySelector("#coolbase").style.display = "";
+  }
 
   ImageElement coolm1 = querySelector("#cool0");
   ImageElement coolm2 = querySelector("#cool1");
   ImageElement coolm3 = querySelector("#cool2");
 
-  void updateCoolness(int amount)
+  void updateCoolness()
   {
-    if(amount > 0)
+    if(cool_level_ > 0)
     {
       coolm1.style.display = "";
     }
@@ -347,7 +357,7 @@ class MainCharacterBehaviour extends FollowableBehaviour
     {
       coolm1.style.display = "none";
     }
-    if(amount > 1)
+    if(cool_level_ > 1)
     {
       coolm2.style.display = "";
     }
@@ -355,7 +365,7 @@ class MainCharacterBehaviour extends FollowableBehaviour
     {
       coolm2.style.display = "none";
     }
-    if(amount > 2)
+    if(cool_level_ > 2)
     {
       coolm3.style.display = "";
     }
@@ -365,43 +375,72 @@ class MainCharacterBehaviour extends FollowableBehaviour
     }
   }
 
-  int getHowCool()
+  int updateHowCool()
   {
-    int cool_level = 0;
-    int num_followers = 0;
-    int max_follower = 0;
-
     FollowerBehaviour cur_follower = followed_;
+    num_followers_ = 0;
     while(cur_follower != null)
     {
-      num_followers++;
-      if(cur_follower.sheep_level_ > max_follower)
+      num_followers_++;
+      if(cur_follower.sheep_level_ > max_follower_)
       {
-        max_follower = cur_follower.sheep_level_;
+        max_follower_ = cur_follower.sheep_level_;
       }
       cur_follower = cur_follower.followed_;
     }
-    if (num_followers > 1)
+    if (num_followers_ > 1)
     {
-      cool_level = 1;
+      cool_level_ = 1;
     }
-    if (max_follower == 2)
+    if (max_follower_ == 2)
     {
-      cool_level = 2;
+      cool_level_ = 2;
     }
-    if (max_follower == 3)
+    if (max_follower_ == 3)
     {
-      cool_level = 3;
+      cool_level_ = 3;
     }
-    return cool_level;
+    return cool_level_;
   }
 
   void update(GameState state)
   {
-    updateCoolness(getHowCool());
+    updateHowCool();
+    updateCoolness();
     if (relative_position_.x >0.98 && relative_position_.x < 1.42 && relative_position_.y > 2.42 && relative_position_.y < 2.65)
     {
-      print('finished');
+      if(!finished_)
+      {
+        if (num_followers_ == 0)
+        {
+          window.location.assign("#end1");
+          finished_ = true;
+        }
+        else if (num_followers_ == 1)
+        {
+          window.location.assign("#end2");
+          finished_ = true;
+        }
+        else if (max_follower_ == 1)
+        {
+          window.location.assign("#end3");
+          finished_ = true;
+        }
+        else if (max_follower_ == 2)
+        {
+          window.location.assign("#end4");
+          finished_ = true;
+        }
+        else if (max_follower_ == 3)
+        {
+          window.location.assign("#end5");
+          finished_ = true;
+        }
+      }
+    }
+    else
+    {
+      finished_ = false;
     }
     if(keyboard_.isDown(Keyboard.UP))
     {

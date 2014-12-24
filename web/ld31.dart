@@ -17,6 +17,8 @@ main() {
   CanvasElement canvas = querySelector(".game-element");
   GameLoopHtml gameLoop = new GameLoopHtml(canvas);
 
+  window.location.assign("#initMenu");
+
   Renderer renderer = new Renderer(canvas);
   GameState draw_state = new GameState(renderer);
 
